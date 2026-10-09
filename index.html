@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinterGram Каз</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-white font-sans select-none pb-24">
+
+    <!-- Верхнее меню управления -->
+    <header class="bg-slate-900 border-b border-slate-800 p-3 flex justify-between items-center sticky top-0 z-50 shadow-md">
+        <h1 class="font-black text-base text-cyan-400 tracking-wider">❄️ WINTERGRAM</h1>
+        <div class="flex gap-1.5">
+            <button onclick="switchTab('cases')" id="btn-cases" class="px-3 py-1 bg-cyan-600 rounded-lg text-xs font-bold transition">Кейсы</button>
+            <button onclick="switchTab('inventory')" id="btn-inventory" class="px-3 py-1 bg-slate-800 rounded-lg text-xs font-bold text-slate-300 transition">Профиль</button>
+        </div>
+    </header>
+
+    <main class="p-4 max-w-md mx-auto space-y-4">
+
+        <!-- ВКЛАДКА: КЕЙСЫ -->
+        <section id="tab-cases" class="space-y-4">
+            <div class="text-center space-y-1">
+                <h2 class="text-lg font-bold">Выбирай кейс и крути</h2>
+                <p class="text-xs text-slate-400">Система честных дропов под стилистику RubUp</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <!-- Кейс 1: 1000 звезд -->
+                <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex flex-col items-center text-center shadow-lg relative overflow-hidden">
+                    <div class="absolute top-2 right-2 text-[10px] bg-cyan-500/20 text-cyan-400 px-1.5 py-0.5 rounded font-bold">TOP</div>
+                    <div class="text-4xl my-2">🎁</div>
+                    <div class="font-bold text-sm">Кейс 1,000</div>
+                    <div class="text-xs text-amber-400 font-semibold mb-3">⭐ 1,000 зв.</div>
+                    <button onclick="openCase(1000)" class="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:opacity-90 py-2 rounded-xl text-xs font-bold shadow">Открыть</button>
+                </div>
+
+                <!-- Кейс 2: 250 звезд -->
+                <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex flex-col items-center text-center shadow-lg relative overflow-hidden">
+                    <div class="absolute top-2 right-2 text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-bold">LITE</div>
+                    <div class="text-4xl my-2">📦</div>
+                    <div class="font-bold text-sm">Кейс 250</div>
+                    <div class="text-xs text-amber-400 font-semibold mb-3">⭐ 250 зв.</div>
+                    <button onclick="openCase(250)" class="w-full bg-gradient-to-r from-amber-600 to-orange-600 hover:opacity-90 py-2 rounded-xl text-xs font-bold shadow">Открыть</button>
+                </div>
+            </div>
+
+            <!-- Блок результата дропа -->
+            <div id="case-result" class="bg-slate-900 border border-slate-800 p-4 rounded-2xl text-center hidden space-y-2">
+                <div class="text-xs text-slate-400 uppercase tracking-wider">Результат выпадения:</div>
+                <div id="reward-icon" class="text-4xl animate-bounce">💎</div>
+                <div id="reward-title" class="text-base font-bold"></div>
+                <div id="reward-desc" class="text-xs text-slate-300"></div>
+            </div>
+        </section>
+
+        <!-- ВКЛАДКА: ПРОФИЛЬ / ИНВЕНТАРЬ И ВЫВОД -->
+        <section id="tab-inventory" class="hidden space-y-4">
+            <h2 class="text-lg font-bold">Личный кабинет</h2>
+            
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-2xl space-y-3">
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">Твой баланс:</span>
+                    <span class="text-amber-400 font-bold text-base" id="user-balance">⭐ 5,150</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-slate-400">Предметы в инвентаре:</span>
+                    <span class="text-cyan-400 font-medium">Рюкзак, Месяц</span>
+                </div>
+                
+                <hr class="border-slate-800">
+
+                <div class="text-center space-y-3 pt-1">
+                    <p class="text-xs text-slate-400">Для пополнения баланса и моментального вывода выигранных NFT обращайся к создателю:</p>
+                    <a href="https://t.me/rubup" target="_blank" class="block w-full bg-emerald-600 hover:bg-emerald-500 py-2.5 rounded-xl text-sm font-bold shadow transition">
+                        💬 Написать в WinterGram (t.me/rubup)
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        function switchTab(tabId) {
+            document.getElementById('tab-cases').classList.add('hidden');
+            document.getElementById('tab-inventory').classList.add('hidden');
+            
+            document.getElementById('btn-cases').className = "px-3 py-1 rounded-lg text-xs font-bold transition " + (tabId === 'cases' ? "bg-cyan-600 text-white" : "bg-slate-800 text-slate-300");
+            document.getElementById('btn-inventory').className = "px-3 py-1 rounded-lg text-xs font-bold transition " + (tabId === 'inventory' ? "bg-cyan-600 text-white" : "bg-slate-800 text-slate-300");
+
+            document.getElementById('tab-' + tabId).classList.remove('hidden');
+        }
+
+        function openCase(price) {
+            const resBox = document.getElementById('case-result');
+            const rewardIcon = document.getElementById('reward-icon');
+            const rewardTitle = document.getElementById('reward-title');
+            const rewardDesc = document.getElementById('reward-desc');
+            
+            resBox.classList.remove('hidden');
+            rewardTitle.innerText = "Крутим кейс...";
+            rewardDesc.innerText = "Подожди пару секунд...";
+            rewardIcon.innerText = "🎲";
+
+            setTimeout(() => {
+                const roll = Math.random() * 100;
+
+                if (price === 1000) {
+                    if (roll < 20) {
+                        rewardIcon.innerText = "💵";
+                        rewardTitle.innerText = "Частичный возврат (500 зв.)";
+                        rewardDesc.innerText = "Шанс выпадения составил 20%. Баланс скорректирован.";
+                    } else if (roll < 32) {
+                        rewardIcon.innerText = "🧸";
+                        rewardTitle.innerText = "NFT: Plush Pepe";
+                        rewardDesc.innerText = "Редкий коллекционный предмет! Шанс: 12%";
+                    } else if (roll < 45) {
+                        rewardIcon.innerText = "🚗";
+                        rewardTitle.innerText = "NFT: Машина Snoop Dogg";
+                        rewardDesc.innerText = "Элитный подарок из Telegram! Шанс: 13%";
+                    } else {
+                        rewardIcon.innerText = "🔥";
+                        rewardTitle.innerText = "КРУПНЫЙ ВЫИГРЫШ: +3,500 звезд!";
+                        rewardDesc.innerText = "Поздравляем! Ты сорвал отличный куш в плюс.";
+                    }
+                } else if (price === 250) {
+                    if (roll < 20) {
+                        rewardIcon.innerText = "🪙";
+                        rewardTitle.innerText = "Возврат: 150 звезд";
+                        rewardDesc.innerText = "Сработал 20% шанс возврата части средств.";
+                    } else if (roll < 35) {
+                        rewardIcon.innerText = "🌙";
+                        rewardTitle.innerText = "NFT подарок: Месяц";
+                        rewardDesc.innerText = "Отличный стильный предмет! Шанс: 15%";
+                    } else {
+                        rewardIcon.innerText = "🚀";
+                        rewardTitle.innerText = "ВЫИГРЫШ В ПЛЮС: +800 звезд!";
+                        rewardDesc.innerText = "Отличный результат открытия кейса!";
+                    }
+                }
+            }, 600);
+        }
+    </script>
+</body>
+</html>
